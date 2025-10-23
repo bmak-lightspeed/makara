@@ -281,6 +281,37 @@ def handle_request_after_third_party_record_creation
 end
 ```
 
+## Development
+
+### Running Tests
+
+1. Start the required databases using Docker Compose:
+   ```bash
+   docker-compose up -d
+   ```
+
+2. Install dependencies using the appropriate ActiveRecord version gemfile:
+   ```bash
+   BUNDLE_GEMFILE=gemfiles/activerecord_6.1.gemfile bundle install
+   ```
+
+3. Run the test suite:
+   ```bash
+   MYSQL_HOST=127.0.0.1 BUNDLE_GEMFILE=gemfiles/activerecord_6.1.gemfile bundle exec rspec
+   ```
+
+The test suite includes tests for PostgreSQL, MySQL, and PostGIS adapters. The docker-compose configuration provides both MySQL 8.0 and PostgreSQL 14 databases.
+
+**Note**: If you're running Ruby 2.7.x, make sure `require 'logger'` is added before `require 'active_record'` in `spec/spec_helper.rb` to avoid compatibility issues.
+
+### Available Test Gemfiles
+
+Different ActiveRecord versions can be tested using the gemfiles in the `gemfiles/` directory:
+- `gemfiles/activerecord_5.2.gemfile` - ActiveRecord 5.2
+- `gemfiles/activerecord_6.0.gemfile` - ActiveRecord 6.0
+- `gemfiles/activerecord_6.1.gemfile` - ActiveRecord 6.1
+- `gemfiles/activerecord_head.gemfile` - ActiveRecord HEAD
+
 ## Todo
 
 * Support for providing context as query param

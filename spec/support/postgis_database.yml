@@ -1,8 +1,9 @@
 test:
   adapter: 'makara_postgis'
   database: 'makara_test'
-  username: 'root'
-  password: ''
+  host: 'localhost'
+  username: 'postgres'
+  password: 'postgres'
 
   timeout: 5000
 

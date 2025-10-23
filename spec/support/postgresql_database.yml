@@ -1,6 +1,9 @@
 test:
   adapter: 'postgresql_makara'
   database: 'makara_test'
+  host: 'localhost'
+  username: 'postgres'
+  password: 'postgres'
 
   timeout: 5000
 

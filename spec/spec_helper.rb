@@ -1,4 +1,5 @@
 require 'uri'
+require 'logger'
 require 'active_record'
 require 'makara'
 require 'timecop'
