@@ -22,6 +22,7 @@ module Makara
       @connections      = []
       @blacklist_errors = []
       @disabled         = false
+      @connection_retries = proxy.config_parser.makara_config[:connection_retries]
       if proxy.shard_aware_for(role)
         @strategy = Makara::Strategies::ShardAware.new(self)
         @shard_strategy_class = proxy.strategy_class_for(proxy.strategy_name_for(role))
@@ -99,6 +100,8 @@ module Makara
     # that may occur within the block.
     def provide
       attempt = 0
+      # +1 to account for the initial attempt (retries are in addition to the first try)
+      max_attempts = @connections.length * (@connection_retries + 1)
       begin
         provided_connection = self.next
 
@@ -130,7 +133,7 @@ module Makara
         raise Makara::Errors::BlacklistedWhileInTransaction.new(@role) if in_transaction
 
         attempt += 1
-        if attempt < @connections.length
+        if attempt < max_attempts
           retry
         elsif connection_made?
           err = Makara::Errors::AllConnectionsBlacklisted.new(self, @blacklist_errors)

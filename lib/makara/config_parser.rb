@@ -23,7 +23,8 @@ module Makara
     DEFAULTS = {
       master_ttl: 5,
       blacklist_duration: 30,
-      sticky: true
+      sticky: true,
+      connection_retries: 0 # only relevant when disable_blacklist is on
     }
 
     # ConnectionUrlResolver is borrowed from Rails 4-2 since its location and implementation
