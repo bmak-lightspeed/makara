@@ -168,4 +168,76 @@ describe Makara::Pool do
     end
     10.times{ master_pool.provide{|connection| expect(connection).not_to eq(wrapper_a) } }
   end
+
+  describe 'connection_retries' do
+    def setup_pool_with_retries(retries, num_connections = 2)
+      config = pool_config.merge(connection_retries: retries, disable_blacklist: true)
+      test_proxy = FakeProxy.new({makara: config.merge(connections: [])})
+      test_pool = Makara::Pool.new('test', test_proxy)
+
+      num_connections.times { test_pool.add(config){ FakeConnection.new } }
+      test_pool.send_to_all :to_s # make the connections
+
+      test_pool
+    end
+
+    it 'retries with default value of 0 (no retries, only initial attempt)' do
+      test_pool = setup_pool_with_retries(0)
+
+      attempt_count = 0
+      begin
+        test_pool.provide do |connection|
+          attempt_count += 1
+          raise Makara::Errors::BlacklistConnection.new(connection, StandardError.new('failure'))
+        end
+      rescue Makara::Errors::AllConnectionsBlacklisted => e
+        expect(attempt_count).to eq(2) # 2 connections * (0 retries + 1 initial attempt)
+      end
+    end
+
+    it 'retries each connection the configured number of times' do
+      test_pool = setup_pool_with_retries(2)
+
+      attempt_count = 0
+      begin
+        test_pool.provide do |connection|
+          attempt_count += 1
+          raise Makara::Errors::BlacklistConnection.new(connection, StandardError.new('failure'))
+        end
+      rescue Makara::Errors::AllConnectionsBlacklisted => e
+        expect(attempt_count).to eq(6) # 2 connections * (2 retries + 1 initial attempt)
+      end
+    end
+
+    it 'succeeds before exhausting all retries if a connection works' do
+      test_pool = setup_pool_with_retries(2)
+
+      attempt_count = 0
+      result = test_pool.provide do |connection|
+        attempt_count += 1
+        if attempt_count < 5
+          raise Makara::Errors::BlacklistConnection.new(connection, StandardError.new('failure'))
+        else
+          'success'
+        end
+      end
+
+      expect(result).to eq('success')
+      expect(attempt_count).to eq(5) # Succeeded before exhausting all 6 possible attempts
+    end
+
+    it 'works correctly with single connection and multiple retries' do
+      test_pool = setup_pool_with_retries(3, 1)
+
+      attempt_count = 0
+      begin
+        test_pool.provide do |connection|
+          attempt_count += 1
+          raise Makara::Errors::BlacklistConnection.new(connection, StandardError.new('failure'))
+        end
+      rescue Makara::Errors::AllConnectionsBlacklisted => e
+        expect(attempt_count).to eq(4) # 1 connection * (3 retries + 1 initial attempt)
+      end
+    end
+  end
 end

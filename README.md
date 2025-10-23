@@ -175,6 +175,10 @@ The makara subconfig sets up the proxy with a few of its own options, then provi
 * id - an identifier for the proxy, used for sticky behaviour and context. The default is to use a MD5 hash of the configuration contents, so if you are setting `sticky` to true, it's a good idea to also set an `id`. Otherwise any stuck connections will be cleared if the configuration changes (as the default MD5 hash id would change as well)
 * blacklist_duration - the number of seconds a node is blacklisted when a connection failure occurs
 * disable_blacklist - do not blacklist node at any error, useful in case of one master
+* connection_retries - the number of times to retry a connection before
+  raising an error. Only applies when `disable_blacklist` is enabled.
+  Default is 0 (no retries). Useful for handling transient connection
+  failures.
 * sticky - if a node should be stuck to once it's used during a specific context
 * master_ttl - how long the master context is persisted. generally, this needs to be longer than any replication lag
 * master_strategy - use a different strategy for picking the "current" master node: `failover` will try to keep the same one until it is blacklisted. The default is `round_robin` which will cycle through available ones.

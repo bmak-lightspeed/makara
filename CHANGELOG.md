@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## v0.6.0 - 2025-01-23
+[Full Changelog](https://github.com/instacart/makara/compare/v0.5.1...v0.6.0)
+
+### Added
+- Add `connection_retries` configuration option to retry failed connections
+  when `disable_blacklist` is enabled. This allows connections to be retried
+  multiple times before raising an error. The default value is 0 (no retries).
+  This feature is particularly useful when blacklisting is disabled and you
+  want to handle transient connection failures.
+
 ### v0.5.1 - 2021-06-04
 [Full Changelog](https://github.com/instacart/makara/compare/v0.5.0...v0.6.0.pre)
 - Use ActiveRecord URL resolver instead of copying definition [#294](https://github.com/instacart/makara/pull/294) Matt Larraz

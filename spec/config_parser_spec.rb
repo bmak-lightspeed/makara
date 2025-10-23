@@ -115,7 +115,8 @@ describe Makara::ConfigParser do
           top_level: 'value',
           sticky: true,
           blacklist_duration: 30,
-          master_ttl: 5
+          master_ttl: 5,
+          connection_retries: 0
         }
       ])
       expect(parser.slave_configs).to eq([
@@ -124,14 +125,16 @@ describe Makara::ConfigParser do
           top_level: 'value',
           sticky: true,
           blacklist_duration: 30,
-          master_ttl: 5
+          master_ttl: 5,
+          connection_retries: 0
         },
         {
           name: 'slave2',
           top_level: 'value',
           sticky: true,
           blacklist_duration: 30,
-          master_ttl: 5
+          master_ttl: 5,
+          connection_retries: 0
         }
       ])
     end
@@ -148,7 +151,8 @@ describe Makara::ConfigParser do
           top_level: 'value',
           sticky: true,
           blacklist_duration: 456,
-          master_ttl: 5
+          master_ttl: 5,
+          connection_retries: 0
         }
       ])
       expect(parser.slave_configs).to eq([
@@ -157,14 +161,16 @@ describe Makara::ConfigParser do
           top_level: 'slave value',
           sticky: true,
           blacklist_duration: 123,
-          master_ttl: 5
+          master_ttl: 5,
+          connection_retries: 0
         },
         {
           name: 'slave2',
           top_level: 'value',
           sticky: true,
           blacklist_duration: 123,
-          master_ttl: 5
+          master_ttl: 5,
+          connection_retries: 0
         }
       ])
     end
